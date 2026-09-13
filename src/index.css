@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+@theme {
+  --color-petrol: #123f42;
+  --color-abyss: #0a2829;
+  --color-ivory: #f4efe6;
+  --color-mist: #dce7e3;
+  --color-copper: #b9784b;
+  --color-copper-soft: #d19a6f;
+  --color-graphite: #23302e;
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+/* ---------- base ---------- */
+
+html {
+  scroll-padding-top: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-abyss);
+  color: var(--color-ivory);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-copper);
+  color: var(--color-abyss);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-abyss);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-petrol);
+  border-radius: 8px;
+  border: 2px solid var(--color-abyss);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-copper);
+}
+
+/* ---------- textura de grão (assinatura ambiental) ---------- */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes marquee-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1) translateY(0);
+  }
+  to {
+    transform: scale(1.075) translateY(-1.4%);
+  }
+}
+
+@keyframes line-rise {
+  from {
+    transform: translateY(115%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cue-stretch {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+/* ---------- assinaturas de movimento ---------- */
+
+.kenburns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.mask-line > span {
+  display: block;
+  transform: translateY(115%);
+  animation: line-rise 1.05s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.marquee-track {
+  animation: marquee-slide var(--marquee-duration, 68s) linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+.scroll-cue {
+  animation: cue-stretch 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* sublinhado deslizante nos links de navegação */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- acessibilidade: movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .kenburns,
+  .marquee-track,
+  .scroll-cue {
+    animation: none !important;
+  }
+  .mask-line > span {
+    animation: none;
+    transform: none;
+  }
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee .marquee-dup {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
